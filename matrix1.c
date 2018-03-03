@@ -15,8 +15,12 @@ void get_walltime(double *wct) {
 
 
 int main() {
-double *table;
-double ts,te;
+  unsigned int i,j;
+  double *table;
+  double ts,te,aps;
+  double sum;
+
+
 
 
   table = (double *)malloc(NROWS*NCOLS*sizeof(double)); 
@@ -27,25 +31,34 @@ double ts,te;
 
   // warmup
 
-  // ...your code here...
-
+  for(i=0;i<NROWS*NCOLS;i++){
+    table[i] = 1.0;
+  }
+  
+  
   // get starting time (double, seconds) 
   get_walltime(&ts);
   
   // workload
-
-  // ...your code here...
-
+  sum = 0.0;
+  for(i=0;i<NROWS;i++){
+    for(j=0;j<NCOLS;j++){
+      sum += table[i*NCOLS+j];
+    }
+  }
+  
   // get ending time
   get_walltime(&te);
 
   // check results
   
-  // ...your code here...
-
+  printf("sum = %f\n",sum);
+  
   // print time elapsed and/or Maccesses/sec
   
-  // ...your code here...  
+  aps=((double)NROWS*NCOLS)/((te-ts)*1e6);
+  
+  printf("avg array element Maccesses/sec = %f\n",aps);
   
   free(table);
 
