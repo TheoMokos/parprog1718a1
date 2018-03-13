@@ -18,7 +18,10 @@ int main() {
   unsigned int i,j;
   double *table;
   double ts,te,aps;
-  double sum;
+  double time;
+  FILE *f;
+
+  f=fopen("results.csv","a");
 
 
 
@@ -40,10 +43,10 @@ int main() {
   get_walltime(&ts);
   
   // workload
-  sum = 0.0;
+  
   for(i=0;i<NROWS;i++){
     for(j=0;j<NCOLS;j++){
-      sum += table[i*NCOLS+j];
+      table[i*NCOLS+j]= table[i*NCOLS+j] + 2.0;
     }
   }
   
@@ -51,17 +54,24 @@ int main() {
   get_walltime(&te);
 
   // check results
+  for(i=0;i<NROWS*NCOLS;i++){
+	if(table[i] != 3.0){
+		printf("Error on the code\n");
+	}
+  }
   
-  printf("sum = %f\n",sum);
   
   // print time elapsed and/or Maccesses/sec
-  
-  aps=((double)NROWS*NCOLS)/((te-ts)*1e6);
-  
-  printf("avg array element Maccesses/sec = %f\n",aps);
+  time = te-ts;
+  aps=(2.0*NROWS*NCOLS)/(time*1e6);
+
+  printf("Time : %lf\n",time);
+  printf("Maccesses/sec : %lf\n",aps);
+  fprintf(f,"%lf\t",time);
+  fprintf(f,"%lf\n",aps);
   
   free(table);
+  fclose(f);
 
   return 0;
 }
-
