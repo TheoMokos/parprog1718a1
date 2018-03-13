@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <sys/time.h>
 
-// compile like:  gcc -Wall -O2 -DNROWS=10000 matrix2.c -o matrix2
+// compile like:  gcc -Wall -O2 -DNROWS=10000 matrix1.c -o matrix1
 
 
 #define NCOLS 100
@@ -18,7 +18,12 @@ int main() {
   unsigned int i,j;
   double *table;
   double ts,te,aps;
-  double sum;
+  double time;
+  FILE *f;
+
+  f=fopen("results.csv","a");
+
+
 
 
   table = (double *)malloc(NROWS*NCOLS*sizeof(double)); 
@@ -29,37 +34,44 @@ int main() {
 
   // warmup
 
-  for (i=0;i<NROWS*NCOLS;i++) {
-     table[i] = 1.0;
+  for(i=0;i<NROWS*NCOLS;i++){
+    table[i] = 1.0;
   }
-
+  
+  
   // get starting time (double, seconds) 
   get_walltime(&ts);
   
   // workload
-
-  sum = 0.0;
-	for (j=0;j<NCOLS;j++) {
-      	for (i=0;i<NROWS;i++) {
-      		sum += table[i*NCOLS+j];
+  
+  for(i=0;i<NCOLS;i++){
+    for(j=0;j<NROWS;j++){
+      table[j*NCOLS+i]= table[j*NCOLS+i] + 2.0;
     }
   }
-
+  
   // get ending time
   get_walltime(&te);
 
   // check results
+  for(i=0;i<NROWS*NCOLS;i++){
+	if(table[i] != 3.0){
+		printf("Code error\n");
+	}
+  }
   
-  printf("sum = %f\n",sum);
-
+  
   // print time elapsed and/or Maccesses/sec
-  
-  aps = ((double)NROWS*NCOLS)/((te-ts)*1e6);
+  time = te-ts;
+  aps=(2.0*NROWS*NCOLS)/(time*1e6);
 
-  printf("avg array element Maccesses/sec = %f\n",aps);  
+  printf("Time : %lf\n",time);
+  printf("Maccesses/sec : %lf\n",aps);
+  fprintf(f,"%lf\t",time);
+  fprintf(f,"%lf\n",aps);
   
   free(table);
+  fclose(f);
 
   return 0;
 }
-
